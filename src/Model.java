@@ -56,6 +56,7 @@ public class Model {
 
 	private boolean roundComplete = false;
 	private boolean gameComplete = false;
+	private boolean roundFailed = false;
 
 	public Model() {
 
@@ -68,6 +69,7 @@ public class Model {
 	public void setupLevel () {
 
 		roundComplete = false;
+		roundFailed = false;
 
 		playerOne = new PlayerOne();
 		playerTwo = new PlayerTwo();
@@ -85,12 +87,15 @@ public class Model {
 		NUMBER_OF_HEAVY_ENEMIES = Level.getNumOfHeavyEnemies();
 		bulletCount = Level.getSTART_NUMBER_OF_BULLETS();
 		health = Level.getSTART_HEALTH();
-
-
 	}
 
 	public void nextLevel() {
 		level++;
+		setupLevel();
+	}
+
+	public void resetLevel() {
+		level = 1;
 		setupLevel();
 	}
 	
@@ -98,7 +103,7 @@ public class Model {
 	public void gamelogic() 
 	{
 		// Player Logic first 
-		playerLogic(); 
+		playerLogic();
 		// Enemy Logic next
 		enemyLogic();
 		// Bullets move next 
@@ -114,34 +119,49 @@ public class Model {
 	   
 	}
 
-//	public void restartGame() {
-//		level = 1;
-//		setupLevel();
-//	}
-
-//	public boolean getRoundFailed () {
-//		return roundFailed;
-//	}
-
 	private void checkGameOver() {
 		if (getLevel().isLevelComplete() && level != LAST_LEVEL) {
 			roundComplete = true;
 		} else if (getLevel().isLevelComplete() && level == LAST_LEVEL) {
 			roundComplete = false;
 			gameComplete = true;
+		} else if (health <= 0 || bulletCount <= 0) {
+			roundFailed = true;
 		}
 	}
 
-	private void gameLogic() {
-		
-		
-		// this is a way to increment across the array list data structure 
+	// This is a way to get the state of the game to the view
+	public int gameState() {
 
-		
+		// Game Complete
+		if (gameComplete) {
+			return -2;
+		} else if (roundComplete) { // Round Complete
+			return 1;
+		} else if (roundFailed) { // Round Failed
+			return 2;
+
+		} else {
+			return 0;
+		}
+	}
+
+	private boolean isPlayerColliding(PlayerOne playerOne, PlayerTwo playerTwo) {
+		float player1RightEdge = playerOne.getCentre().getX() + playerOne.getWidth();
+		float player2LeftEdge = playerTwo.getCentre().getX();
+		float player2RightEdge = playerTwo.getCentre().getX() + playerTwo.getWidth();
+		float player1LeftEdge = playerOne.getCentre().getX();
+
+		return player1RightEdge > player2LeftEdge && player1LeftEdge < player2RightEdge;
+	}
+
+	private void gameLogic() {
+
+		// this is a way to increment across the array list data structure
 		//see if they hit anything 
 		// using enhanced for-loop style as it makes it alot easier both code wise and reading wise too
 
-		// Normal Enemies
+		// Region: Normal Enemies
 		for (Enemy temp : normalEnemies) {
 
 			if (!temp.isHit()) {
@@ -154,7 +174,6 @@ public class Model {
 						explosionList.add(tempExplosion);
 						sound.playSound("res/sounds/explosion.wav");
 
-						normalEnemies.remove(temp);
 						BulletList.remove(Bullet);
 
 						Timer timer = new Timer();
@@ -164,12 +183,14 @@ public class Model {
 								explosionList.remove(tempExplosion);
 							}
 						}, 500);
+
+						normalEnemies.remove(temp);
 					}
 				}
 			}
 		}
 
-		// Heavy Enemies
+		// Region: Heavy Enemies
 		for (HeavyEnemy heavyEnemy : heavyEnemies) {
 
 			if (!heavyEnemy.isHit()) {
@@ -197,7 +218,7 @@ public class Model {
 			}
 		}
 
-		// AmmoCrate
+		// Region: AmmoCrate
 		for (GameObject temp : ammoList)
 		{
 			for (GameObject Bullet : BulletList)
@@ -216,7 +237,7 @@ public class Model {
 
 		}
 
-		// HealthCrate
+		// Region: HealthCrate
 		for (GameObject temp : healthCrateList)
 		{
 			for (GameObject Bullet : BulletList)
@@ -243,9 +264,8 @@ public class Model {
 			temp.getCentre().ApplyVector(new Vector3f(0,-0.5f,0));
 			 
 			 
-			//see if they get to the top of the screen ( remember 0 is the top 
-			if (temp.getCentre().getY()==600.0f)  // current boundary need to pass value to model
-			{
+			//see if they get to the top of the screen ( remember 0 is the top )
+			if (temp.getCentre().getY()==600.0f) { // current boundary need to pass value to model
 				normalEnemies.remove(temp);
 
 				GameObject tempExplosion = createExplosion(new Point3f(temp.getCentre().getX(), temp.getCentre().getY(), 0));
@@ -268,13 +288,9 @@ public class Model {
 		// Heavy Enemies
 		for (HeavyEnemy heavyEnemy : heavyEnemies) {
 
-			// Move enemies
 			heavyEnemy.getCentre().ApplyVector(new Vector3f(0,-1.0f,0));
 
-
-			//see if they get to the top of the screen ( remember 0 is the top
-			if (heavyEnemy.getCentre().getY()==600.0f)  // current boundary need to pass value to model
-			{
+			if (heavyEnemy.getCentre().getY()==600.0f) {
 				heavyEnemies.remove(heavyEnemy);
 
 				GameObject tempExplosion = createExplosion(new Point3f(heavyEnemy.getCentre().getX(), heavyEnemy.getCentre().getY(), 0));
@@ -296,28 +312,22 @@ public class Model {
 	}
 
 	private void bulletLogic() {
-		// TODO Auto-generated method stub
-		// move bullets
 
-	  
-		for (GameObject temp : BulletList) 
-		{
+		// move bullets
+		for (GameObject temp : BulletList) {
 		    //check to move them
 			  
 			temp.getCentre().ApplyVector(new Vector3f(0,1,0));
 			//see if they hit anything 
 			
 			//see if they get to the top of the screen ( remember 0 is the top 
-			if (temp.getCentre().getY()==0)
-			{
+			if (temp.getCentre().getY()==0) {
 			 	BulletList.remove(temp);
 			} 
-		} 
-		
+		}
 	}
 
 	private void AmmoCrateLogic() {
-		// TODO Auto-generated method stub
 
 		for (GameObject temp : ammoList)
 		{
@@ -340,7 +350,6 @@ public class Model {
 
 	// Health Crate Logic
 	private void HealthCrateLogic() {
-		// TODO Auto-generated method stub
 
 		for (GameObject temp : healthCrateList) {
 			// Move enemies
@@ -357,23 +366,27 @@ public class Model {
 
 	private void playerLogic() {
 
-		// Player 1
+		// Region: Player 1
 		if(Controller.getInstance().isKeyAPressed()) {
 			playerOne.moveLeft();
 		}
-		
+
 		if(Controller.getInstance().isKeyDPressed()) {
-			playerOne.moveRight();
+			if (!isPlayerColliding(playerOne, playerTwo)) {
+				playerOne.moveRight();
+			}
 		}
-		
+
 		if(Controller.getInstance().isKeySpacePressed()) {
 			fireBullet();
 			Controller.getInstance().setKeySpacePressed(false);
 		}
 
-		// Player 2
+		// Region: Player 2
 		if(Controller.getInstance().isKeyLeftPressed()) {
-			playerTwo.moveLeft();
+			if (!isPlayerColliding(playerOne, playerTwo)) {
+				playerTwo.moveLeft();
+			}
 		}
 
 		if(Controller.getInstance().isKeyRightPressed()) {
@@ -384,7 +397,6 @@ public class Model {
 			fireBulletPlayerTwo();
 			Controller.getInstance().setKeyUpPressed(false);
 		}
-
 	}
 
 	private void CreateBullet() {
@@ -486,18 +498,5 @@ public class Model {
 	public CopyOnWriteArrayList<GameObject> getExplosions() {
 		return explosionList;
 	}
-
-	public int gameState() {
-
-		// Game Complete
-		if (gameComplete) {
-			return -2;
-		} else if (roundComplete) { // Round Complete
-			return 1;
-		} else {
-			return 0;
-		}
-	}
-
 }
 

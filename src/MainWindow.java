@@ -51,10 +51,17 @@ public class MainWindow {
 	private static final JFrame frame = new JFrame("Protect the City"); // Change to the name of your game
 	private static Viewer gamecanvas;
 	private static JLabel BackgroundImageForStartMenu;
-	private static JLabel Title;
+	private static JLabel BackgroundImageForRoundFailed;
+	private static JLabel BackgroundImageForRoundComplete;
+	private static JLabel BackgroundImageForGameOver;
+	private static JLabel gameTitle;
+	private static JLabel roundFailedTitle;
+	private static JLabel roundCompleteTitle;
+	private static JLabel gameCompleteTitle;
 	private static Clip menuMusic;
 	private static JButton playButton;
-	private static JButton nextRound;
+	private static JButton nextRoundButton;
+	private static JButton retryButton;
 	private static JButton exitButton;
 	private static JButton menuButton;
 	// Game Components
@@ -69,55 +76,158 @@ public class MainWindow {
 		frame.setLayout(null);
 		frame.setResizable(false);
 
-		File Background = new File("res/gui/backgrounds/BG_MainMenu.png");
-		File title = new File("res/gui/titles/Title_Game.png");
+		// Region: Import Files
+
+		// * Backgrounds * //
+		File menu_background = new File("res/gui/backgrounds/BG_MainMenu.png");
+		File round_failed_background = new File("res/gui/backgrounds/BG_MissionFailed.png");
+		File round_complete_background = new File("res/gui/backgrounds/BG_MainMenu.png");
+		File game_complete_background = new File("res/gui/backgrounds/BG_GameOver.png");
+
+		// * Titles * //
+		File game_title = new File("res/gui/titles/Title_Game.png");
+		File round_complete_title = new File("res/gui/titles/Title_MissionComplete.png");
+		File round_failed_title = new File("res/gui/titles/Title_MissionFailed.png");
+		File game_complete_title = new File("res/gui/titles/Title_GameComplete.png");
+
+		// * Buttons * //
 		File play = new File("res/gui/buttons/Button_Start.png");
 		File exit = new File("res/gui/buttons/Button_Exit.png");
-		File menu = new File("res/sounds/menu_music.wav");
+		File next = new File("res/gui/buttons/Button_NextLevel.png");
+		File retry = new File("res/gui/buttons/Button_Retry.png");
+		File menu = new File("res/gui/buttons/Button_MainMenu.png");
 
-		// Add Play Button to Frame
+		// * Music * //
+		File menu_music = new File("res/sounds/menu_music.wav");
+
+		// Region: Buttons
+
+		// * Play Button * //
 		try {
 			BufferedImage playImage = ImageIO.read(play);
-			Image img = playImage.getScaledInstance(250, 100, Image.SCALE_SMOOTH);
+			Image img = playImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
 
 			playButton = new JButton(new ImageIcon(img));
 			playButton.setBorder(BorderFactory.createEmptyBorder());
 			playButton.setContentAreaFilled(false);
-			playButton.setBounds(475, 350, 250, 100);
+			playButton.setBounds(500, 340, 200, 80);
 			frame.add(playButton);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		// Add Exit Button to Frame
+		// * Next Round Button * //
+		try {
+			BufferedImage nextImage = ImageIO.read(next);
+			Image img = nextImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+
+			nextRoundButton = new JButton(new ImageIcon(img));
+			nextRoundButton.setBorder(BorderFactory.createEmptyBorder());
+			nextRoundButton.setContentAreaFilled(false);
+			nextRoundButton.setBounds(500, 340, 200, 80);
+			frame.add(nextRoundButton);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// * Retry Button * //
+		try {
+			BufferedImage retryImage = ImageIO.read(retry);
+			Image img = retryImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
+
+			retryButton = new JButton(new ImageIcon(img));
+			retryButton.setBorder(BorderFactory.createEmptyBorder());
+			retryButton.setContentAreaFilled(false);
+			retryButton.setBounds(500, 340, 200, 80);
+			frame.add(retryButton);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// * Exit Button * //
 		try {
 			BufferedImage exitImage = ImageIO.read(exit);
-			Image img = exitImage.getScaledInstance(125, 50, Image.SCALE_SMOOTH);
+			Image img = exitImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
 
 			exitButton = new JButton(new ImageIcon(img));
 			exitButton.setBorder(BorderFactory.createEmptyBorder());
 			exitButton.setContentAreaFilled(false);
-			exitButton.setBounds(475, 550, 125, 50);
+			exitButton.setBounds(500, 430, 200, 80);
 			frame.add(exitButton);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		// Add Title to Frame
+		// * Menu Button * //
 		try {
-			BufferedImage titleImage = ImageIO.read(title);
-			Image img = titleImage.getScaledInstance(900, 225, Image.SCALE_SMOOTH);
+			BufferedImage menuImage = ImageIO.read(menu);
+			Image img = menuImage.getScaledInstance(200, 80, Image.SCALE_SMOOTH);
 
-			Title = new JLabel(new ImageIcon(img));
-			Title.setBounds(150, 100, 900, 225);
-			frame.add(Title);
+			menuButton = new JButton(new ImageIcon(img));
+			menuButton.setBorder(BorderFactory.createEmptyBorder());
+			menuButton.setContentAreaFilled(false);
+			menuButton.setBounds(500, 340, 200, 80);
+			frame.add(menuButton);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		// Add Background to Frame
+		// Region: Titles
+
+		// * Game Title * //
 		try {
-			BufferedImage backgroundImage = ImageIO.read(Background);
+			BufferedImage titleImage = ImageIO.read(game_title);
+			Image img = titleImage.getScaledInstance(900, 225, Image.SCALE_SMOOTH);
+
+			gameTitle = new JLabel(new ImageIcon(img));
+			gameTitle.setBounds(150, 100, 900, 225);
+			frame.add(gameTitle);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// * Round Complete Title * //
+		try {
+			BufferedImage titleImage = ImageIO.read(round_complete_title);
+			Image img = titleImage.getScaledInstance(900, 225, Image.SCALE_SMOOTH);
+
+			roundCompleteTitle = new JLabel(new ImageIcon(img));
+			roundCompleteTitle.setBounds(150, 100, 900, 225);
+			frame.add(roundCompleteTitle);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// * Round Failed Title * //
+		try {
+			BufferedImage failedImage = ImageIO.read(round_failed_title);
+			Image img = failedImage.getScaledInstance(900, 225, Image.SCALE_SMOOTH);
+
+			roundFailedTitle = new JLabel(new ImageIcon(img));
+			roundFailedTitle.setBounds(150, 100, 900, 225);
+			frame.add(roundFailedTitle);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// * Game Complete Title * //
+		try {
+			BufferedImage titleImage = ImageIO.read(game_complete_title);
+			Image img = titleImage.getScaledInstance(900, 225, Image.SCALE_SMOOTH);
+
+			gameCompleteTitle = new JLabel(new ImageIcon(img));
+			gameCompleteTitle.setBounds(150, 100, 900, 225);
+			frame.add(gameCompleteTitle);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Region: Backgrounds
+
+		// * Main Menu Background * //
+		try {
+			BufferedImage backgroundImage = ImageIO.read(menu_background);
 			BackgroundImageForStartMenu = new JLabel(new ImageIcon(backgroundImage));
 			BackgroundImageForStartMenu.setBounds(0, 0, WIDTH, HEIGHT);
 			frame.add(BackgroundImageForStartMenu);
@@ -125,9 +235,42 @@ public class MainWindow {
 			e.printStackTrace();
 		}
 
-		// Add Menu Music to Frame
+		// * Round Complete Background * //
 		try {
-			AudioInputStream menuAudio = AudioSystem.getAudioInputStream(menu);
+			BufferedImage backgroundImage = ImageIO.read(round_complete_background);
+			BackgroundImageForRoundComplete = new JLabel(new ImageIcon(backgroundImage));
+			BackgroundImageForRoundComplete.setBounds(0, 0, WIDTH, HEIGHT);
+			frame.add(BackgroundImageForRoundComplete);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// * Round Failed Background * //
+		try {
+			BufferedImage backgroundImage = ImageIO.read(round_failed_background);
+			BackgroundImageForRoundFailed = new JLabel(new ImageIcon(backgroundImage));
+			BackgroundImageForRoundFailed.setBounds(0, 0, WIDTH, HEIGHT);
+			frame.add(BackgroundImageForRoundFailed);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// * Game Complete Background * //
+		try {
+			BufferedImage backgroundImage = ImageIO.read(game_complete_background);
+			BackgroundImageForGameOver = new JLabel(new ImageIcon(backgroundImage));
+			BackgroundImageForGameOver.setBounds(0, 0, WIDTH, HEIGHT);
+			frame.add(BackgroundImageForGameOver);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+		// Region: Audio
+
+		// * Menu Music * //
+		try {
+			AudioInputStream menuAudio = AudioSystem.getAudioInputStream(menu_music);
 			DataLine.Info mInfo = new DataLine.Info(Clip.class, menuAudio.getFormat());
 			menuMusic = (Clip) AudioSystem.getLine(mInfo);
 			menuMusic.open(menuAudio);
@@ -137,15 +280,65 @@ public class MainWindow {
 			e.printStackTrace();
 		}
 
-		// Add Play Button Action Listener
-		playButton.addActionListener((new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				playButton.setVisible(false);
-				Title.setVisible(false);
-				BackgroundImageForStartMenu.setVisible(false);
+		// TODO: Game Music
+		// TODO: Round Complete Music
+		// TODO: Round Failed Music
 
-				startGame();
-			}
+		// Region: Action Listeners
+
+		// * playButton Action Listener * //
+		playButton.addActionListener((e -> {
+
+            // ! Hide Main Menu Components * //
+            playButton.setVisible(false);
+            exitButton.setVisible(false);
+            gameTitle.setVisible(false);
+            BackgroundImageForStartMenu.setVisible(false);
+
+            // ! Hide Round Complete Components * //
+            nextRoundButton.setVisible(false);
+            roundCompleteTitle.setVisible(false);
+            BackgroundImageForRoundComplete.setVisible(false);
+
+            // ! Hide Round Failed Components * //
+            retryButton.setVisible(false);
+            roundFailedTitle.setVisible(false);
+            BackgroundImageForRoundFailed.setVisible(false);
+
+            startGame();
+        }));
+
+		// * exitButton Action Listener * //
+		exitButton.addActionListener((e -> System.exit(0)));
+
+		// * nextRound Action Listener * //
+
+		nextRoundButton.addActionListener((e -> {
+
+            roundCompleteTitle.setVisible(false);
+            nextRoundButton.setVisible(false);
+            BackgroundImageForRoundComplete.setVisible(false);
+
+            startGame();
+
+            gameworld.nextLevel();
+        }));
+
+		// * retryButton Action Listener * //
+		retryButton.addActionListener((e -> {
+
+            roundFailedTitle.setVisible(false);
+            retryButton.setVisible(false);
+            BackgroundImageForRoundFailed.setVisible(false);
+
+            startGame();
+
+            gameworld.resetLevel();
+        }));
+
+		// * menuButton Action Listener * //
+		menuButton.addActionListener((e -> {
+			gameState = -1;
 		}));
 
 		frame.setVisible(true);
@@ -173,8 +366,25 @@ public class MainWindow {
 			} else if (gameState == -1) { // Main Menu
 
 				gamecanvas.setVisible(false);
+
+				// ! Hide Game Over Components * //
+				menuButton.setVisible(false);
+				BackgroundImageForGameOver.setVisible(false);
+
+				// ! Hide Round Complete Components * //
+				nextRoundButton.setVisible(false);
+				roundCompleteTitle.setVisible(false);
+				BackgroundImageForRoundComplete.setVisible(false);
+
+				// ! Hide Round Failed Components * //
+				retryButton.setVisible(false);
+				roundFailedTitle.setVisible(false);
+				BackgroundImageForRoundFailed.setVisible(false);
+
+				// * Show Main Menu Components * //
 				playButton.setVisible(true);
-				Title.setVisible(true);
+				exitButton.setVisible(true);
+				gameTitle.setVisible(true);
 				BackgroundImageForStartMenu.setVisible(true);
 
 				// gameMusic.stop();
@@ -182,12 +392,78 @@ public class MainWindow {
 				menuMusic.start();
 
 			} else if (gameState == -2) { // Game Complete
+
+				// ! Hide Main Menu Components * //
+				playButton.setVisible(false);
+				gameTitle.setVisible(false);
+				BackgroundImageForStartMenu.setVisible(false);
+
+				// ! Hide Round Complete Components * //
+				nextRoundButton.setVisible(false);
+				roundCompleteTitle.setVisible(false);
+				BackgroundImageForRoundComplete.setVisible(false);
+
+				// ! Hide Round Failed Components * //
+				retryButton.setVisible(false);
+				roundFailedTitle.setVisible(false);
+				BackgroundImageForRoundFailed.setVisible(false);
+
+				// * Show Game Complete Components * //
+				menuButton.setVisible(true);
+				exitButton.setVisible(true);
+				BackgroundImageForGameOver.setVisible(true);
+
 				gamecanvas.setVisible(false);
-				nextRound.setVisible(false);
-				showGameOver();
-			} else if (gameState == 1) { // Round Complete
+
+			} else if (gameState == 1) { // * Round Complete * //
+
 				gamecanvas.setVisible(false);
-				showRoundOver();
+
+				// ! Hide Main Menu Components * //
+				playButton.setVisible(false);
+				gameTitle.setVisible(false);
+				BackgroundImageForStartMenu.setVisible(false);
+
+				// ! Hide Round Failed Components * //
+				retryButton.setVisible(false);
+				roundFailedTitle.setVisible(false);
+				BackgroundImageForRoundFailed.setVisible(false);
+
+				// ! Hide Game Over Components * //
+				menuButton.setVisible(false);
+				exitButton.setVisible(false);
+				BackgroundImageForGameOver.setVisible(false);
+
+				// * Show Round Complete Components * //
+				nextRoundButton.setVisible(true);
+				roundCompleteTitle.setVisible(true);
+				BackgroundImageForRoundComplete.setVisible(true);
+			}
+
+			else if (gameState == 2) { // Round Failed
+
+				gamecanvas.setVisible(false);
+
+				// ! Hide Main Menu Components * //
+				playButton.setVisible(false);
+				gameTitle.setVisible(false);
+				exitButton.setVisible(false);
+				BackgroundImageForStartMenu.setVisible(false);
+
+				// ! Hide Round Complete Components * //
+				nextRoundButton.setVisible(false);
+				roundCompleteTitle.setVisible(false);
+				BackgroundImageForRoundComplete.setVisible(false);
+
+				// ! Hide Game Over Components * //
+				menuButton.setVisible(false);
+				exitButton.setVisible(false);
+				BackgroundImageForGameOver.setVisible(false);
+
+				// * Show Round Failed Components * //
+				retryButton.setVisible(true);
+				roundFailedTitle.setVisible(true);
+				BackgroundImageForRoundFailed.setVisible(true);
 			}
 
 			// UNIT test to see if framerate matches
@@ -209,37 +485,6 @@ public class MainWindow {
 		gamecanvas.addKeyListener(Controller); // add the controller to the canvas
 		gamecanvas.requestFocusInWindow(); // making sure that the Canvas is in focus so it can get input from the keyboard
 		gameState = 0;
-	}
-
-	private static void showRoundOver() {
-
-		// Add Round Over Label to Frame
-		JLabel roundOver = new JLabel("Round Over");
-		roundOver.setBounds(500, 100, 200, 50);
-		frame.add(roundOver);
-
-		// Add Play Button to Frame
-		nextRound = new JButton("Next Round");
-		nextRound.setBounds(500, 500, 100, 50);
-		frame.add(nextRound);
-
-		// Add Black Background to Frame
-		JLabel blackBackground = new JLabel();
-		blackBackground.setOpaque(true);
-		blackBackground.setBackground(Color.BLACK);
-		blackBackground.setBounds(0, 0, WIDTH, HEIGHT);
-		frame.add(blackBackground);
-
-		// Add Next Round Button Action Listener
-		nextRound.addActionListener((new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				roundOver.setVisible(false);
-				nextRound.setVisible(false);
-				startGame();
-				gameworld.nextLevel();
-			}
-		}));
-
 	}
 
 	private static void showGameOver() {

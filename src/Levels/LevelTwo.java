@@ -8,8 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LevelTwo extends Level implements Levels {
 
-    private final int NUMBER_OF_NORMAL_ENEMIES = 6;
-    private final int NUMBER_OF_HEAVY_ENEMIES = 2;
+    private final int NUMBER_OF_NORMAL_ENEMIES = 1;
+    private final int NUMBER_OF_HEAVY_ENEMIES = 1;
 
 
     public LevelTwo() {
