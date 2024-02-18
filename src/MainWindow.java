@@ -59,6 +59,7 @@ public class MainWindow {
 	private static JLabel roundCompleteTitle;
 	private static JLabel gameCompleteTitle;
 	private static Clip menuMusic;
+	private static Clip roundFailedMusic;
 	private static JButton playButton;
 	private static JButton nextRoundButton;
 	private static JButton retryButton;
@@ -66,7 +67,7 @@ public class MainWindow {
 	private static JButton menuButton;
 	// Game Components
 	private static Model gameworld;
-	private static int gameState = -3;
+	private static int gameState = -4;
 	private static final KeyListener Controller = new Controller();
 	  
 	public MainWindow() {
@@ -99,6 +100,7 @@ public class MainWindow {
 
 		// * Music * //
 		File menu_music = new File("res/sounds/menu_music.wav");
+		File round_failed_music = new File("res/sounds/mission_failed.wav");
 
 		// Region: Buttons
 
@@ -126,6 +128,7 @@ public class MainWindow {
 			nextRoundButton.setContentAreaFilled(false);
 			nextRoundButton.setBounds(500, 340, 200, 80);
 			frame.add(nextRoundButton);
+			nextRoundButton.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -140,6 +143,7 @@ public class MainWindow {
 			retryButton.setContentAreaFilled(false);
 			retryButton.setBounds(500, 340, 200, 80);
 			frame.add(retryButton);
+			retryButton.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -168,6 +172,7 @@ public class MainWindow {
 			menuButton.setContentAreaFilled(false);
 			menuButton.setBounds(500, 340, 200, 80);
 			frame.add(menuButton);
+			menuButton.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -182,6 +187,7 @@ public class MainWindow {
 			gameTitle = new JLabel(new ImageIcon(img));
 			gameTitle.setBounds(150, 100, 900, 225);
 			frame.add(gameTitle);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -194,6 +200,7 @@ public class MainWindow {
 			roundCompleteTitle = new JLabel(new ImageIcon(img));
 			roundCompleteTitle.setBounds(150, 100, 900, 225);
 			frame.add(roundCompleteTitle);
+			roundCompleteTitle.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -206,7 +213,7 @@ public class MainWindow {
 			roundFailedTitle = new JLabel(new ImageIcon(img));
 			roundFailedTitle.setBounds(150, 100, 900, 225);
 			frame.add(roundFailedTitle);
-
+			roundFailedTitle.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -219,6 +226,7 @@ public class MainWindow {
 			gameCompleteTitle = new JLabel(new ImageIcon(img));
 			gameCompleteTitle.setBounds(150, 100, 900, 225);
 			frame.add(gameCompleteTitle);
+			gameCompleteTitle.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -241,6 +249,7 @@ public class MainWindow {
 			BackgroundImageForRoundComplete = new JLabel(new ImageIcon(backgroundImage));
 			BackgroundImageForRoundComplete.setBounds(0, 0, WIDTH, HEIGHT);
 			frame.add(BackgroundImageForRoundComplete);
+			BackgroundImageForRoundComplete.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -251,6 +260,7 @@ public class MainWindow {
 			BackgroundImageForRoundFailed = new JLabel(new ImageIcon(backgroundImage));
 			BackgroundImageForRoundFailed.setBounds(0, 0, WIDTH, HEIGHT);
 			frame.add(BackgroundImageForRoundFailed);
+			BackgroundImageForRoundFailed.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -261,6 +271,7 @@ public class MainWindow {
 			BackgroundImageForGameOver = new JLabel(new ImageIcon(backgroundImage));
 			BackgroundImageForGameOver.setBounds(0, 0, WIDTH, HEIGHT);
 			frame.add(BackgroundImageForGameOver);
+			BackgroundImageForGameOver.setVisible(false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -280,30 +291,33 @@ public class MainWindow {
 			e.printStackTrace();
 		}
 
+		// * Round Failed Music * //
+		try {
+			AudioInputStream roundFailedAudio = AudioSystem.getAudioInputStream(round_failed_music);
+			DataLine.Info mInfo = new DataLine.Info(Clip.class, roundFailedAudio.getFormat());
+			roundFailedMusic = (Clip) AudioSystem.getLine(mInfo);
+			roundFailedMusic.open(roundFailedAudio);
+			FloatControl roundFailedControl = (FloatControl) roundFailedMusic.getControl(FloatControl.Type.MASTER_GAIN);
+			roundFailedControl.setValue(0f);
+		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+			e.printStackTrace();
+		}
+
 		// TODO: Game Music
 		// TODO: Round Complete Music
-		// TODO: Round Failed Music
 
 		// Region: Action Listeners
 
 		// * playButton Action Listener * //
 		playButton.addActionListener((e -> {
 
-            // ! Hide Main Menu Components * //
-            playButton.setVisible(false);
-            exitButton.setVisible(false);
-            gameTitle.setVisible(false);
-            BackgroundImageForStartMenu.setVisible(false);
+			// * Hide Main Menu Components * //
+			playButton.setVisible(false);
+			exitButton.setVisible(false);
+			gameTitle.setVisible(false);
+			BackgroundImageForStartMenu.setVisible(false);
 
-            // ! Hide Round Complete Components * //
-            nextRoundButton.setVisible(false);
-            roundCompleteTitle.setVisible(false);
-            BackgroundImageForRoundComplete.setVisible(false);
-
-            // ! Hide Round Failed Components * //
-            retryButton.setVisible(false);
-            roundFailedTitle.setVisible(false);
-            BackgroundImageForRoundFailed.setVisible(false);
+			menuMusic.stop();
 
             startGame();
         }));
@@ -314,7 +328,6 @@ public class MainWindow {
 		// * nextRound Action Listener * //
 
 		nextRoundButton.addActionListener((e -> {
-
             roundCompleteTitle.setVisible(false);
             nextRoundButton.setVisible(false);
             BackgroundImageForRoundComplete.setVisible(false);
@@ -367,27 +380,12 @@ public class MainWindow {
 
 				gamecanvas.setVisible(false);
 
-				// ! Hide Game Over Components * //
-				menuButton.setVisible(false);
-				BackgroundImageForGameOver.setVisible(false);
-
-				// ! Hide Round Complete Components * //
-				nextRoundButton.setVisible(false);
-				roundCompleteTitle.setVisible(false);
-				BackgroundImageForRoundComplete.setVisible(false);
-
-				// ! Hide Round Failed Components * //
-				retryButton.setVisible(false);
-				roundFailedTitle.setVisible(false);
-				BackgroundImageForRoundFailed.setVisible(false);
-
 				// * Show Main Menu Components * //
 				playButton.setVisible(true);
 				exitButton.setVisible(true);
 				gameTitle.setVisible(true);
 				BackgroundImageForStartMenu.setVisible(true);
 
-				// gameMusic.stop();
 				menuMusic.loop(1000);
 				menuMusic.start();
 
@@ -407,10 +405,12 @@ public class MainWindow {
 				retryButton.setVisible(false);
 				roundFailedTitle.setVisible(false);
 				BackgroundImageForRoundFailed.setVisible(false);
+				roundFailedMusic.stop();
 
 				// * Show Game Complete Components * //
 				menuButton.setVisible(true);
 				exitButton.setVisible(true);
+				gameCompleteTitle.setVisible(true);
 				BackgroundImageForGameOver.setVisible(true);
 
 				gamecanvas.setVisible(false);
@@ -428,10 +428,12 @@ public class MainWindow {
 				retryButton.setVisible(false);
 				roundFailedTitle.setVisible(false);
 				BackgroundImageForRoundFailed.setVisible(false);
+				roundFailedMusic.stop();
 
 				// ! Hide Game Over Components * //
 				menuButton.setVisible(false);
 				exitButton.setVisible(false);
+				gameCompleteTitle.setVisible(false);
 				BackgroundImageForGameOver.setVisible(false);
 
 				// * Show Round Complete Components * //
@@ -458,12 +460,16 @@ public class MainWindow {
 				// ! Hide Game Over Components * //
 				menuButton.setVisible(false);
 				exitButton.setVisible(false);
+				gameCompleteTitle.setVisible(false);
 				BackgroundImageForGameOver.setVisible(false);
 
 				// * Show Round Failed Components * //
 				retryButton.setVisible(true);
 				roundFailedTitle.setVisible(true);
 				BackgroundImageForRoundFailed.setVisible(true);
+				menuMusic.setMicrosecondPosition(0);
+				roundFailedMusic.start();
+
 			}
 
 			// UNIT test to see if framerate matches
@@ -476,8 +482,6 @@ public class MainWindow {
 		gamecanvas = new Viewer(gameworld);
 
 		frame.add(gamecanvas);
-
-		menuMusic.stop();
 
 		gamecanvas.setBounds(0, 0, WIDTH, HEIGHT);
 		gamecanvas.setBackground(new Color(255, 255, 255)); //white background  replaced by Space background but if you remove the background method this will draw a white screen
