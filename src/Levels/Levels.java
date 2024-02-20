@@ -10,16 +10,15 @@ public interface Levels {
 
     CopyOnWriteArrayList<Enemy> getEnemyList();
     CopyOnWriteArrayList<HeavyEnemy> getHeavyEnemyList();
-    CopyOnWriteArrayList<GameObject> getAmmoList();
 
     String getBackground();
     int getNumOfNormalEnemies();
 
     int getNumOfHeavyEnemies();
 
-    int getSTART_HEALTH();
+    int getStartingHealth();
 
-    int getSTART_NUMBER_OF_BULLETS();
+    int getStatingNumOfBullets();
 
     boolean isLevelComplete();
 }

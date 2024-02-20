@@ -49,11 +49,11 @@ public class LevelTwo extends Level implements Levels {
         return NUMBER_OF_HEAVY_ENEMIES;
     }
 
-    public int getSTART_NUMBER_OF_BULLETS() {
+    public int getStatingNumOfBullets() {
         return 10;
     }
 
-    public int getSTART_HEALTH() {
+    public int getStartingHealth() {
         return 10;
     }
 

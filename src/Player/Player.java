@@ -1,13 +1,13 @@
-package util;
+package Player;
 
-public class PlayerTwo extends GameObject {
-    private int health;
-    private int bulletCount;
+import util.GameObject;
+import util.Point3f;
+import util.Vector3f;
 
-    public PlayerTwo () {
-        super("res/tank_multi.png",50,50,new Point3f(600,590,0));
-        this.health = 10;
-        this.bulletCount = 10;
+public class Player extends GameObject {
+
+    public Player(String texturePath, Point3f startingPos) {
+        super(texturePath, 50, 50, startingPos);
     }
 
     public void moveLeft() {

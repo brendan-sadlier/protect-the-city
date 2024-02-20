@@ -1,11 +1,14 @@
 import java.util.Timer;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import Player.PlayerOne;
+import Player.PlayerTwo;
 import util.*;
 
 import Levels.Levels;
 import Levels.LevelOne;
 import Levels.LevelTwo;
+import Levels.LevelThree;
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -33,6 +36,7 @@ SOFTWARE.
  */ 
 public class Model {
 
+
 	private PlayerOne playerOne;
 	private PlayerTwo playerTwo;
 	private final SoundEffect sound = new SoundEffect();
@@ -46,13 +50,16 @@ public class Model {
 	private final CopyOnWriteArrayList<GameObject> explosionList  = new CopyOnWriteArrayList<GameObject>();
 	private int bulletCount;
 	private int health;
-	private final int LAST_LEVEL = 2;
+	private final int LAST_LEVEL = 3;
 	private int level;
 	private Levels Level;
 
 	private int NUMBER_OF_NORMAL_ENEMIES;
 	private int NUMBER_OF_HEAVY_ENEMIES;
 	private int NUMBER_OF_AMMO_CRATES;
+	private int NUMBER_OF_HEALTH_CRATES;
+
+
 
 	private boolean roundComplete = false;
 	private boolean gameComplete = false;
@@ -74,19 +81,26 @@ public class Model {
 		playerOne = new PlayerOne();
 		playerTwo = new PlayerTwo();
 
-        if (level == 2) {
-            Level = new LevelTwo();
-        } else {
-            Level = new LevelOne();
-        }
+		switch (level) {
+			case 1:
+				Level = new LevelOne();
+				break;
+			case 2:
+				Level = new LevelTwo();
+				break;
+			case 3:
+				Level = new LevelThree();
+				break;
+		}
 
-		normalEnemies = Level.getEnemyList();
-		heavyEnemies = Level.getHeavyEnemyList();
 		NUMBER_OF_AMMO_CRATES = 1;
+		NUMBER_OF_HEALTH_CRATES = 1;
 		NUMBER_OF_NORMAL_ENEMIES = Level.getNumOfNormalEnemies();
+		System.out.println("NUMBER_OF_NORMAL_ENEMIES: " + NUMBER_OF_NORMAL_ENEMIES);
 		NUMBER_OF_HEAVY_ENEMIES = Level.getNumOfHeavyEnemies();
-		bulletCount = Level.getSTART_NUMBER_OF_BULLETS();
-		health = Level.getSTART_HEALTH();
+		System.out.println("NUMBER_OF_HEAVY_ENEMIES: " + NUMBER_OF_HEAVY_ENEMIES);
+		bulletCount = Level.getStatingNumOfBullets();
+		health = Level.getStartingHealth();
 	}
 
 	public void nextLevel() {
@@ -120,9 +134,12 @@ public class Model {
 	}
 
 	private void checkGameOver() {
-		if (getLevel().isLevelComplete() && level != LAST_LEVEL) {
+
+		boolean noActiveEnemies = normalEnemies.isEmpty() && heavyEnemies.isEmpty();
+
+		if (noActiveEnemies && level != LAST_LEVEL) {
 			roundComplete = true;
-		} else if (getLevel().isLevelComplete() && level == LAST_LEVEL) {
+		} else if (noActiveEnemies && level == LAST_LEVEL) {
 			roundComplete = false;
 			gameComplete = true;
 		} else if (health <= 0 || bulletCount <= 0) {
@@ -152,7 +169,7 @@ public class Model {
 		float player2RightEdge = playerTwo.getCentre().getX() + playerTwo.getWidth();
 		float player1LeftEdge = playerOne.getCentre().getX();
 
-		return player1RightEdge > player2LeftEdge && player1LeftEdge < player2RightEdge;
+		return !(player1RightEdge > player2LeftEdge) || !(player1LeftEdge < player2RightEdge);
 	}
 
 	private void gameLogic() {
@@ -182,7 +199,7 @@ public class Model {
 							public void run() {
 								explosionList.remove(tempExplosion);
 							}
-						}, 500);
+						}, 1000);
 
 						normalEnemies.remove(temp);
 					}
@@ -212,7 +229,7 @@ public class Model {
 							public void run() {
 								explosionList.remove(tempExplosion);
 							}
-						}, 500);
+						}, 1000);
 					}
 				}
 			}
@@ -285,6 +302,12 @@ public class Model {
 			} 
 		}
 
+		if (Math.random() < 0.5 && NUMBER_OF_NORMAL_ENEMIES > 0 && normalEnemies.size() < ((Math.random() * 3) + 1)) {
+			normalEnemies.add(new Enemy(new Point3f(((float)Math.random()*1000), 0,0)));
+			NUMBER_OF_NORMAL_ENEMIES--;
+			System.out.println("NUMBER_OF_NORMAL_ENEMIES: " + NUMBER_OF_NORMAL_ENEMIES);
+		}
+
 		// Heavy Enemies
 		for (HeavyEnemy heavyEnemy : heavyEnemies) {
 
@@ -308,6 +331,12 @@ public class Model {
 				// enemies win so score decreases
 				takeDamage(heavyEnemy.getDamage());
 			}
+		}
+
+		if (normalEnemies.size() <= NUMBER_OF_NORMAL_ENEMIES / 2 && NUMBER_OF_HEAVY_ENEMIES > 0 && normalEnemies.size() < ((Math.random() * 3) + 1)) {
+			heavyEnemies.add(new HeavyEnemy(new Point3f(((float)Math.random()*1000), 0,0)));
+			NUMBER_OF_HEAVY_ENEMIES--;
+			System.out.println("NUMBER_OF_HEAVY_ENEMIES: " + NUMBER_OF_HEAVY_ENEMIES);
 		}
 	}
 
@@ -343,8 +372,9 @@ public class Model {
 			}
 		}
 
-		if (ammoList.isEmpty() && NUMBER_OF_AMMO_CRATES > 0 && Level.getEnemyList().size() <= NUMBER_OF_NORMAL_ENEMIES / 2) {
+		if (bulletCount < 4 && NUMBER_OF_AMMO_CRATES > 0 && Math.random() < 0.1) {
 			CreateAmmoCrate();
+			NUMBER_OF_AMMO_CRATES--;
 		}
 	}
 
@@ -362,6 +392,11 @@ public class Model {
 				healthCrateList.remove(temp);
 			}
 		}
+
+		if (health < 4 && NUMBER_OF_HEALTH_CRATES > 0 && Math.random() < 0.1) {
+			CreateHealthCrate();
+			NUMBER_OF_HEALTH_CRATES--;
+		}
 	}
 
 	private void playerLogic() {
@@ -372,7 +407,7 @@ public class Model {
 		}
 
 		if(Controller.getInstance().isKeyDPressed()) {
-			if (!isPlayerColliding(playerOne, playerTwo)) {
+			if (isPlayerColliding(playerOne, playerTwo)) {
 				playerOne.moveRight();
 			}
 		}
@@ -384,7 +419,7 @@ public class Model {
 
 		// Region: Player 2
 		if(Controller.getInstance().isKeyLeftPressed()) {
-			if (!isPlayerColliding(playerOne, playerTwo)) {
+			if (isPlayerColliding(playerOne, playerTwo)) {
 				playerTwo.moveLeft();
 			}
 		}

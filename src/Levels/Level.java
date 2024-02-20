@@ -15,7 +15,7 @@ public class Level {
     public CopyOnWriteArrayList<GameObject> ammoList;
 
 
-    public Level() {}
+    public Level () {}
 
     public Level (String background) {
         this.background = background;
@@ -25,14 +25,12 @@ public class Level {
         return background;
     }
 
-
     public CopyOnWriteArrayList<Enemy> getEnemyList() {
         return normalEnemies;
     }
     public CopyOnWriteArrayList<HeavyEnemy> getHeavyEnemyList() {
         return heavyEnemies;
     }
-    public CopyOnWriteArrayList<GameObject> getAmmoList() { return ammoList;}
 
     public boolean isLevelComplete() {
         return normalEnemies.isEmpty() && heavyEnemies.isEmpty();
