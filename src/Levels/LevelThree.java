@@ -33,11 +33,11 @@ public class LevelThree extends Level implements Levels {
     }
 
     public int getNumOfNormalEnemies() {
-        return 20;
+        return 1;
     }
 
     public int getNumOfHeavyEnemies() {
-        return 15;
+        return 1;
     }
 
     public int getStartingHealth() {

@@ -93,6 +93,15 @@ public class Controller implements KeyListener {
 	
 	}
 
+	public void resetController() {
+		setKeyAPressed(false);
+		setKeyDPressed(false);
+		setKeySpacePressed(false);
+		setKeyLeftPressed(false);
+		setKeyRightPressed(false);
+		setKeyUpPressed(false);
+	}
+
 
 	public boolean isKeyAPressed() {
 		return KeyAPressed;

@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.swing.*;
 
+import util.GlobalGameState;
 import util.UnitTests;
 
 /*
@@ -40,6 +41,7 @@ SOFTWARE.
 
 
 
+@SuppressWarnings("ALL")
 public class MainWindow {
 
 	// Final Values
@@ -60,6 +62,8 @@ public class MainWindow {
 	private static JLabel gameCompleteTitle;
 	private static Clip menuMusic;
 	private static Clip roundFailedMusic;
+	private static Clip gameMusic;
+	private static Clip roundCompleteMusic;
 	private static JButton playButton;
 	private static JButton nextRoundButton;
 	private static JButton retryButton;
@@ -67,7 +71,7 @@ public class MainWindow {
 	private static JButton menuButton;
 	// Game Components
 	private static Model gameworld;
-	private static int gameState = -4;
+	private static int gameState = -3;
 	private static final KeyListener Controller = new Controller();
 	  
 	public MainWindow() {
@@ -101,6 +105,8 @@ public class MainWindow {
 		// * Music * //
 		File menu_music = new File("res/sounds/menu_music.wav");
 		File round_failed_music = new File("res/sounds/mission_failed.wav");
+		File game_music = new File("res/sounds/game_music.wav");
+		File round_complete_music = new File("res/sounds/mission_success.wav");
 
 		// Region: Buttons
 
@@ -303,8 +309,29 @@ public class MainWindow {
 			e.printStackTrace();
 		}
 
-		// TODO: Game Music
-		// TODO: Round Complete Music
+		//* Game Music * //
+		try {
+			AudioInputStream gameAudio = AudioSystem.getAudioInputStream(game_music);
+			DataLine.Info mInfo = new DataLine.Info(Clip.class, gameAudio.getFormat());
+			gameMusic = (Clip) AudioSystem.getLine(mInfo);
+			gameMusic.open(gameAudio);
+			FloatControl gameControl = (FloatControl) gameMusic.getControl(FloatControl.Type.MASTER_GAIN);
+			gameControl.setValue(-2f);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// * Round Complete Music * //
+		try {
+			AudioInputStream roundCompleteAudio = AudioSystem.getAudioInputStream(round_complete_music);
+			DataLine.Info mInfo = new DataLine.Info(Clip.class, roundCompleteAudio.getFormat());
+			roundCompleteMusic = (Clip) AudioSystem.getLine(mInfo);
+			roundCompleteMusic.open(roundCompleteAudio);
+			FloatControl roundCompleteControl = (FloatControl) roundCompleteMusic.getControl(FloatControl.Type.MASTER_GAIN);
+			roundCompleteControl.setValue(0f);
+		} catch (IOException | UnsupportedAudioFileException | LineUnavailableException e) {
+			e.printStackTrace();
+		}
 
 		// Region: Action Listeners
 
@@ -326,15 +353,13 @@ public class MainWindow {
 		exitButton.addActionListener((e -> System.exit(0)));
 
 		// * nextRound Action Listener * //
-
 		nextRoundButton.addActionListener((e -> {
             roundCompleteTitle.setVisible(false);
             nextRoundButton.setVisible(false);
             BackgroundImageForRoundComplete.setVisible(false);
 
+			GlobalGameState.getInstance().nextLevel();
             startGame();
-
-            gameworld.nextLevel();
         }));
 
 		// * retryButton Action Listener * //
@@ -343,10 +368,11 @@ public class MainWindow {
             roundFailedTitle.setVisible(false);
             retryButton.setVisible(false);
             BackgroundImageForRoundFailed.setVisible(false);
+			roundFailedMusic.stop();
+
+			GlobalGameState.getInstance().setCurrentLevel(1);
 
             startGame();
-
-            gameworld.resetLevel();
         }));
 
 		// * menuButton Action Listener * //
@@ -374,6 +400,9 @@ public class MainWindow {
 
 			if (gameState == 0) { // Game Running
 
+				gameMusic.loop(1000);
+				gameMusic.start();
+
 				gameloop();
 
 			} else if (gameState == -1) { // Main Menu
@@ -386,26 +415,14 @@ public class MainWindow {
 				gameTitle.setVisible(true);
 				BackgroundImageForStartMenu.setVisible(true);
 
+				menuMusic.setMicrosecondPosition(0);
 				menuMusic.loop(1000);
 				menuMusic.start();
 
-			} else if (gameState == -2) { // Game Complete
+			} else if (gameState == 1) { // Game Complete
 
-				// ! Hide Main Menu Components * //
-				playButton.setVisible(false);
-				gameTitle.setVisible(false);
-				BackgroundImageForStartMenu.setVisible(false);
-
-				// ! Hide Round Complete Components * //
-				nextRoundButton.setVisible(false);
-				roundCompleteTitle.setVisible(false);
-				BackgroundImageForRoundComplete.setVisible(false);
-
-				// ! Hide Round Failed Components * //
-				retryButton.setVisible(false);
-				roundFailedTitle.setVisible(false);
-				BackgroundImageForRoundFailed.setVisible(false);
-				roundFailedMusic.stop();
+				gamecanvas.setVisible(false);
+				gameMusic.stop();
 
 				// * Show Game Complete Components * //
 				menuButton.setVisible(true);
@@ -413,55 +430,25 @@ public class MainWindow {
 				gameCompleteTitle.setVisible(true);
 				BackgroundImageForGameOver.setVisible(true);
 
+
+				GlobalGameState.getInstance().setCurrentLevel(1);
+
+			} else if (gameState == 2) { //Round Complete
+
 				gamecanvas.setVisible(false);
-
-			} else if (gameState == 1) { // * Round Complete * //
-
-				gamecanvas.setVisible(false);
-
-				// ! Hide Main Menu Components * //
-				playButton.setVisible(false);
-				gameTitle.setVisible(false);
-				BackgroundImageForStartMenu.setVisible(false);
-
-				// ! Hide Round Failed Components * //
-				retryButton.setVisible(false);
-				roundFailedTitle.setVisible(false);
-				BackgroundImageForRoundFailed.setVisible(false);
-				roundFailedMusic.stop();
-
-				// ! Hide Game Over Components * //
-				menuButton.setVisible(false);
-				exitButton.setVisible(false);
-				gameCompleteTitle.setVisible(false);
-				BackgroundImageForGameOver.setVisible(false);
+				gameMusic.stop();
 
 				// * Show Round Complete Components * //
 				nextRoundButton.setVisible(true);
 				roundCompleteTitle.setVisible(true);
 				BackgroundImageForRoundComplete.setVisible(true);
-			}
+				
+				roundCompleteMusic.start();
 
-			else if (gameState == 2) { // Round Failed
+			} else if (gameState == 3) { // Round Failed
 
 				gamecanvas.setVisible(false);
-
-				// ! Hide Main Menu Components * //
-				playButton.setVisible(false);
-				gameTitle.setVisible(false);
-				exitButton.setVisible(false);
-				BackgroundImageForStartMenu.setVisible(false);
-
-				// ! Hide Round Complete Components * //
-				nextRoundButton.setVisible(false);
-				roundCompleteTitle.setVisible(false);
-				BackgroundImageForRoundComplete.setVisible(false);
-
-				// ! Hide Game Over Components * //
-				menuButton.setVisible(false);
-				exitButton.setVisible(false);
-				gameCompleteTitle.setVisible(false);
-				BackgroundImageForGameOver.setVisible(false);
+				gameMusic.stop();
 
 				// * Show Round Failed Components * //
 				retryButton.setVisible(true);
@@ -469,7 +456,6 @@ public class MainWindow {
 				BackgroundImageForRoundFailed.setVisible(true);
 				menuMusic.setMicrosecondPosition(0);
 				roundFailedMusic.start();
-
 			}
 
 			// UNIT test to see if framerate matches
@@ -489,52 +475,6 @@ public class MainWindow {
 		gamecanvas.addKeyListener(Controller); // add the controller to the canvas
 		gamecanvas.requestFocusInWindow(); // making sure that the Canvas is in focus so it can get input from the keyboard
 		gameState = 0;
-	}
-
-	private static void showGameOver() {
-
-		BackgroundImageForStartMenu.setVisible(true);
-
-		// Add Game Over Label to Frame
-		JLabel gameOver = new JLabel("Game Over");
-		gameOver.setBounds(500, 100, 200, 50);
-		frame.add(gameOver);
-
-		// Add Exit Button to Frame
-		exitButton = new JButton("Exit");
-		exitButton.setBounds(500, 500, 100, 50);
-		frame.add(exitButton);
-
-		// Add Main Menu Button to Frame
-		menuButton = new JButton("Main Menu");
-		menuButton.setBounds(500, 400, 100, 50);
-		frame.add(menuButton);
-
-		// Add Black Background to Frame
-		JLabel blackBackground = new JLabel();
-		blackBackground.setOpaque(true);
-		blackBackground.setBackground(Color.BLACK);
-		blackBackground.setBounds(0, 0, WIDTH, HEIGHT);
-		frame.add(blackBackground);
-
-		// Add Restart Button Action Listener
-		exitButton.addActionListener((new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		}));
-
-		// Add Main Menu Button Action Listener
-		menuButton.addActionListener((new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				gameOver.setVisible(false);
-				exitButton.setVisible(false);
-				menuButton.setVisible(false);
-				blackBackground.setVisible(false);
-
-				gameState = -1;
-			}
-		}));
 	}
 
 	//Basic Model-View-Controller pattern 

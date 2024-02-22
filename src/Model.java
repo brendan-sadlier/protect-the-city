@@ -51,7 +51,8 @@ public class Model {
 	private int bulletCount;
 	private int health;
 	private final int LAST_LEVEL = 3;
-	private int level;
+//	private int level;
+	private int previousLevel = 0;
 	private Levels Level;
 
 	private int NUMBER_OF_NORMAL_ENEMIES;
@@ -66,50 +67,46 @@ public class Model {
 	private boolean roundFailed = false;
 
 	public Model() {
-
-		level = 1;
-		gameComplete = false;
-
 		setupLevel();
 	}
 
 	public void setupLevel () {
 
+		int level = GlobalGameState.getInstance().getCurrentLevel();
+		Controller.getInstance().resetController();
+
 		roundComplete = false;
 		roundFailed = false;
+		gameComplete = false;
 
 		playerOne = new PlayerOne();
 		playerTwo = new PlayerTwo();
 
-		switch (level) {
-			case 1:
-				Level = new LevelOne();
-				break;
-			case 2:
-				Level = new LevelTwo();
-				break;
-			case 3:
-				Level = new LevelThree();
-				break;
+		if (level == 1) {
+			Level = new LevelOne();
+		} else if (level == 2) {
+			Level = new LevelTwo();
+		} else {
+			Level = new LevelThree();
 		}
 
 		NUMBER_OF_AMMO_CRATES = 1;
 		NUMBER_OF_HEALTH_CRATES = 1;
 		NUMBER_OF_NORMAL_ENEMIES = Level.getNumOfNormalEnemies();
-		System.out.println("NUMBER_OF_NORMAL_ENEMIES: " + NUMBER_OF_NORMAL_ENEMIES);
 		NUMBER_OF_HEAVY_ENEMIES = Level.getNumOfHeavyEnemies();
-		System.out.println("NUMBER_OF_HEAVY_ENEMIES: " + NUMBER_OF_HEAVY_ENEMIES);
 		bulletCount = Level.getStatingNumOfBullets();
 		health = Level.getStartingHealth();
+
+		System.out.println("Level: " + level);
 	}
 
 	public void nextLevel() {
-		level++;
+		GlobalGameState.getInstance().nextLevel();
 		setupLevel();
 	}
 
 	public void resetLevel() {
-		level = 1;
+		GlobalGameState.getInstance().setCurrentLevel(1);
 		setupLevel();
 	}
 	
@@ -135,12 +132,13 @@ public class Model {
 
 	private void checkGameOver() {
 
+		int level = GlobalGameState.getInstance().getCurrentLevel();
+
 		boolean noActiveEnemies = normalEnemies.isEmpty() && heavyEnemies.isEmpty();
 
 		if (noActiveEnemies && level != LAST_LEVEL) {
 			roundComplete = true;
-		} else if (noActiveEnemies && level == LAST_LEVEL) {
-			roundComplete = false;
+		} else if (noActiveEnemies) {
 			gameComplete = true;
 		} else if (health <= 0 || bulletCount <= 0) {
 			roundFailed = true;
@@ -152,12 +150,11 @@ public class Model {
 
 		// Game Complete
 		if (gameComplete) {
-			return -2;
-		} else if (roundComplete) { // Round Complete
 			return 1;
-		} else if (roundFailed) { // Round Failed
+		} else if (roundComplete) {
 			return 2;
-
+		} else if (roundFailed){
+			return 3;
 		} else {
 			return 0;
 		}
@@ -305,7 +302,6 @@ public class Model {
 		if (Math.random() < 0.5 && NUMBER_OF_NORMAL_ENEMIES > 0 && normalEnemies.size() < ((Math.random() * 3) + 1)) {
 			normalEnemies.add(new Enemy(new Point3f(((float)Math.random()*1000), 0,0)));
 			NUMBER_OF_NORMAL_ENEMIES--;
-			System.out.println("NUMBER_OF_NORMAL_ENEMIES: " + NUMBER_OF_NORMAL_ENEMIES);
 		}
 
 		// Heavy Enemies
@@ -336,7 +332,6 @@ public class Model {
 		if (normalEnemies.size() <= NUMBER_OF_NORMAL_ENEMIES / 2 && NUMBER_OF_HEAVY_ENEMIES > 0 && normalEnemies.size() < ((Math.random() * 3) + 1)) {
 			heavyEnemies.add(new HeavyEnemy(new Point3f(((float)Math.random()*1000), 0,0)));
 			NUMBER_OF_HEAVY_ENEMIES--;
-			System.out.println("NUMBER_OF_HEAVY_ENEMIES: " + NUMBER_OF_HEAVY_ENEMIES);
 		}
 	}
 
@@ -406,8 +401,8 @@ public class Model {
 			playerOne.moveLeft();
 		}
 
-		if(Controller.getInstance().isKeyDPressed()) {
-			if (isPlayerColliding(playerOne, playerTwo)) {
+		if (isPlayerColliding(playerOne, playerTwo)) {
+			if(Controller.getInstance().isKeyDPressed()) {
 				playerOne.moveRight();
 			}
 		}
@@ -418,8 +413,8 @@ public class Model {
 		}
 
 		// Region: Player 2
-		if(Controller.getInstance().isKeyLeftPressed()) {
-			if (isPlayerColliding(playerOne, playerTwo)) {
+		if (isPlayerColliding(playerOne, playerTwo)) {
+			if(Controller.getInstance().isKeyLeftPressed()) {
 				playerTwo.moveLeft();
 			}
 		}
