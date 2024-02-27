@@ -20,5 +20,8 @@ public interface Levels {
 
     int getStatingNumOfBullets();
 
+    int getStartingNumberOfHealthCrates();
+    int getStartingNumberOfAmmoCrates();
+
     boolean isLevelComplete();
 }

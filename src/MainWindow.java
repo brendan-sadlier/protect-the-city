@@ -357,6 +357,7 @@ public class MainWindow {
             roundCompleteTitle.setVisible(false);
             nextRoundButton.setVisible(false);
             BackgroundImageForRoundComplete.setVisible(false);
+			roundCompleteMusic.stop();
 
 			GlobalGameState.getInstance().nextLevel();
             startGame();
@@ -377,6 +378,10 @@ public class MainWindow {
 
 		// * menuButton Action Listener * //
 		menuButton.addActionListener((e -> {
+
+			menuButton.setVisible(false);
+			gameCompleteTitle.setVisible(false);
+			BackgroundImageForGameOver.setVisible(false);
 			gameState = -1;
 		}));
 
@@ -442,7 +447,7 @@ public class MainWindow {
 				nextRoundButton.setVisible(true);
 				roundCompleteTitle.setVisible(true);
 				BackgroundImageForRoundComplete.setVisible(true);
-				
+
 				roundCompleteMusic.start();
 
 			} else if (gameState == 3) { // Round Failed

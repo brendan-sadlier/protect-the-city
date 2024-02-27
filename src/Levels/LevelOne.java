@@ -12,6 +12,8 @@ public class LevelOne extends Level implements Levels {
     private final int NUMBER_OF_HEAVY_ENEMIES = 1;
     private final int START_NUMBER_OF_BULLETS = 3;
     private final int START_HEALTH = 4;
+    private final int START_NUMBER_OF_HEALTH_CRATES = 1;
+    private final int START_NUMBER_OF_AMMO_CRATES = 1;
 
     public LevelOne() {
 
@@ -46,6 +48,15 @@ public class LevelOne extends Level implements Levels {
 
     public int getStatingNumOfBullets() {
         return START_NUMBER_OF_BULLETS;
+    }
+
+    @Override
+    public int getStartingNumberOfHealthCrates() {
+        return START_NUMBER_OF_HEALTH_CRATES;
+    }
+
+    public int getStartingNumberOfAmmoCrates() {
+        return START_NUMBER_OF_AMMO_CRATES;
     }
 
     public int getStartingHealth() {

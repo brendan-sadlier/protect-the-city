@@ -33,11 +33,11 @@ public class LevelThree extends Level implements Levels {
     }
 
     public int getNumOfNormalEnemies() {
-        return 1;
+        return 10;
     }
 
     public int getNumOfHeavyEnemies() {
-        return 1;
+        return 6;
     }
 
     public int getStartingHealth() {
@@ -46,5 +46,15 @@ public class LevelThree extends Level implements Levels {
 
     public int getStatingNumOfBullets() {
         return 10;
+    }
+
+    @Override
+    public int getStartingNumberOfHealthCrates() {
+        return 3;
+    }
+
+    @Override
+    public int getStartingNumberOfAmmoCrates() {
+        return 3;
     }
 }

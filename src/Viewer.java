@@ -155,15 +155,12 @@ public class Viewer extends JPanel {
 		g.setColor(Color.WHITE);
 		g.fillRect(10, 10, 215, 25);
 
-		File TextureToLoad = new File("res/bullet_1_icon.png");
+		File TextureToLoad = new File("res/gui/icons/BulletIcon.png");
 
 		for (int i = gameworld.getBulletCount(); i > 0; i--) {
 
 			int bulletWidth = 14;
 			int bulletHeight = 17;
-
-//			g.setColor(Color.BLUE);
-//			g.fillRect(20 + padding, 15, 15, 20);
 
 			try {
 				Image myImage = ImageIO.read(TextureToLoad);
@@ -185,15 +182,12 @@ public class Viewer extends JPanel {
 		g.setColor(Color.WHITE);
 		g.fillRect(10, 50, 215, 25);
 
-		File TextureToLoad = new File("res/shield_icon.png");
+		File TextureToLoad = new File("res/gui/icons/ShieldIcon.png");
 
 		for (int i = gameworld.getHealth(); i > 0; i--) {
 
 			int shieldWidth = 14;
 			int shieldHeight = 17;
-
-//			g.setColor(Color.BLUE);
-//			g.fillRect(20 + padding, 15, 15, 20);
 
 			try {
 				Image myImage = ImageIO.read(TextureToLoad);
@@ -228,7 +222,7 @@ public class Viewer extends JPanel {
 		try {
 			Image myImage = ImageIO.read(TextureToLoad); 
 			//64 by 128 
-			 g.drawImage(myImage, x,y, x+width, y+height, 0 , 0, 149, 199, null);
+			 g.drawImage(myImage, x,y, x+width, y+height, 0 , 0, 150, 200, null);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -241,7 +235,7 @@ public class Viewer extends JPanel {
 		try {
 			Image myImage = ImageIO.read(TextureToLoad);
 			//64 by 128
-			g.drawImage(myImage, x,y, x+width, y+height, 0 , 0, 50, 50, null);
+			g.drawImage(myImage, x,y, x+width, y+height, 0 , 0, 320, 320, null);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -255,7 +249,7 @@ public class Viewer extends JPanel {
 		try {
 			Image myImage = ImageIO.read(TextureToLoad);
 			//64 by 128
-			g.drawImage(myImage, x,y, x+width, y+height, 0 , 0, 999, 999, null);
+			g.drawImage(myImage, x,y, x+width, y+height, 0 , 0, 320, 320, null);
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

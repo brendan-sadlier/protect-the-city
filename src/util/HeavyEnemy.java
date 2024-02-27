@@ -7,7 +7,7 @@ public class HeavyEnemy extends GameObject {
 
 
     public HeavyEnemy (Point3f centre) {
-        super("res/missile_2.png",30,30, centre);
+        super("res/sprites/MissileTwo.png",30,30, centre);
         this.damage = 2;
         this.isHit = false;
     }

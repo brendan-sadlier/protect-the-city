@@ -51,8 +51,6 @@ public class Model {
 	private int bulletCount;
 	private int health;
 	private final int LAST_LEVEL = 3;
-//	private int level;
-	private int previousLevel = 0;
 	private Levels Level;
 
 	private int NUMBER_OF_NORMAL_ENEMIES;
@@ -72,12 +70,12 @@ public class Model {
 
 	public void setupLevel () {
 
-		int level = GlobalGameState.getInstance().getCurrentLevel();
-		Controller.getInstance().resetController();
-
 		roundComplete = false;
 		roundFailed = false;
 		gameComplete = false;
+
+		int level = GlobalGameState.getInstance().getCurrentLevel();
+		Controller.getInstance().resetController();
 
 		playerOne = new PlayerOne();
 		playerTwo = new PlayerTwo();
@@ -90,8 +88,8 @@ public class Model {
 			Level = new LevelThree();
 		}
 
-		NUMBER_OF_AMMO_CRATES = 1;
-		NUMBER_OF_HEALTH_CRATES = 1;
+		NUMBER_OF_AMMO_CRATES = Level.getStartingNumberOfAmmoCrates();
+		NUMBER_OF_HEALTH_CRATES = Level.getStartingNumberOfHealthCrates();
 		NUMBER_OF_NORMAL_ENEMIES = Level.getNumOfNormalEnemies();
 		NUMBER_OF_HEAVY_ENEMIES = Level.getNumOfHeavyEnemies();
 		bulletCount = Level.getStatingNumOfBullets();
@@ -138,7 +136,7 @@ public class Model {
 
 		if (noActiveEnemies && level != LAST_LEVEL) {
 			roundComplete = true;
-		} else if (noActiveEnemies) {
+		} else if (noActiveEnemies && GlobalGameState.getInstance().getCurrentLevel() == LAST_LEVEL) {
 			gameComplete = true;
 		} else if (health <= 0 || bulletCount <= 0) {
 			roundFailed = true;
@@ -299,7 +297,7 @@ public class Model {
 			} 
 		}
 
-		if (Math.random() < 0.5 && NUMBER_OF_NORMAL_ENEMIES > 0 && normalEnemies.size() < ((Math.random() * 3) + 1)) {
+		if (Math.random() < 0.5 && NUMBER_OF_NORMAL_ENEMIES > 0 && normalEnemies.size() <= 2) {
 			normalEnemies.add(new Enemy(new Point3f(((float)Math.random()*1000), 0,0)));
 			NUMBER_OF_NORMAL_ENEMIES--;
 		}
@@ -329,7 +327,7 @@ public class Model {
 			}
 		}
 
-		if (normalEnemies.size() <= NUMBER_OF_NORMAL_ENEMIES / 2 && NUMBER_OF_HEAVY_ENEMIES > 0 && normalEnemies.size() < ((Math.random() * 3) + 1)) {
+		if (normalEnemies.size() <= NUMBER_OF_NORMAL_ENEMIES / 2 && NUMBER_OF_HEAVY_ENEMIES > 0) {
 			heavyEnemies.add(new HeavyEnemy(new Point3f(((float)Math.random()*1000), 0,0)));
 			NUMBER_OF_HEAVY_ENEMIES--;
 		}
@@ -367,7 +365,7 @@ public class Model {
 			}
 		}
 
-		if (bulletCount < 4 && NUMBER_OF_AMMO_CRATES > 0 && Math.random() < 0.1) {
+		if (bulletCount < 4 && NUMBER_OF_AMMO_CRATES > 0 && ammoList.isEmpty() && Math.random() < 0.1) {
 			CreateAmmoCrate();
 			NUMBER_OF_AMMO_CRATES--;
 		}
@@ -388,7 +386,7 @@ public class Model {
 			}
 		}
 
-		if (health < 4 && NUMBER_OF_HEALTH_CRATES > 0 && Math.random() < 0.1) {
+		if (health < 4 && NUMBER_OF_HEALTH_CRATES > 0 && healthCrateList.isEmpty() && Math.random() < 0.1) {
 			CreateHealthCrate();
 			NUMBER_OF_HEALTH_CRATES--;
 		}
@@ -438,15 +436,15 @@ public class Model {
 	}
 
 	private GameObject createExplosion (Point3f point) {
-		return new GameObject("res/explosion_strip.png", 50, 50, point);
+		return new GameObject("res/sprites/ExplosionStrip.png", 50, 50, point);
 	}
 
 	private void CreateAmmoCrate() {
-		ammoList.add(new GameObject("res/ammo_crate.png",50,50,new Point3f(((float)Math.random()*1200), 0,0)));
+		ammoList.add(new GameObject("res/sprites/AmmoCrate.png",50,50,new Point3f(((float)Math.random()*1200), 0,0)));
 	}
 
 	private void CreateHealthCrate() {
-		healthCrateList.add(new GameObject("res/health_crate.png",50,50,new Point3f(((float)Math.random()*1200), 0,0)));
+		healthCrateList.add(new GameObject("res/sprites/ShieldCrate.png",50,50,new Point3f(((float)Math.random()*1200), 0,0)));
 	}
 
 	public void fireBullet () {

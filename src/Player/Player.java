@@ -19,6 +19,6 @@ public class Player extends GameObject {
     }
 
     public GameObject CreateBullet() {
-        return new GameObject("res/bullet_1.png",7,15,new Point3f(this.getCentre().getX() + 22, this.getCentre().getY() - 12,0.0f));
+        return new GameObject("res/sprites/Bullet.png",7,15,new Point3f(this.getCentre().getX() + 22, this.getCentre().getY() - 12,0.0f));
     }
 }

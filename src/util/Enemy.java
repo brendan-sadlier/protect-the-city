@@ -9,7 +9,7 @@ public class Enemy extends GameObject {
 
 
     public Enemy(Point3f centre) {
-        super("res/missile_1.png",50,50, centre);
+        super("res/sprites/MissileOne.png",50,50, centre);
         this.damage = 1;
         this.isHit = false;
     }

@@ -8,8 +8,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LevelTwo extends Level implements Levels {
 
-    private final int NUMBER_OF_NORMAL_ENEMIES = 1;
-    private final int NUMBER_OF_HEAVY_ENEMIES = 1;
+    private final int NUMBER_OF_NORMAL_ENEMIES = 6;
+    private final int NUMBER_OF_HEAVY_ENEMIES = 3;
+    private final int NUMBER_OF_AMMO_CRATES = 3;
+    private final int NUMBER_OF_HEALTH_CRATES = 2;
 
 
     public LevelTwo() {
@@ -51,6 +53,14 @@ public class LevelTwo extends Level implements Levels {
 
     public int getStatingNumOfBullets() {
         return 10;
+    }
+
+    public int getStartingNumberOfHealthCrates() {
+        return NUMBER_OF_HEALTH_CRATES;
+    }
+
+    public int getStartingNumberOfAmmoCrates() {
+        return NUMBER_OF_AMMO_CRATES;
     }
 
     public int getStartingHealth() {
