@@ -38,8 +38,8 @@ Players must shoot down the incoming enemy missiles to protect their city. They 
 
 ### Built With
 
-[![Built With](https://skillicons.dev/icons?i=java)](https://skillicons.dev)
-  
+[![Java]][Java]
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -47,11 +47,11 @@ Players must shoot down the incoming enemy missiles to protect their city. They 
 
 ## Credits
 
-| Asset Type             | Link                                                                |
-| ----------------- | ------------------------------------------------------------------ |
-| **Backgrounds** | [DALL-E 3](https://openai.com/dall-e-3) |
-| **Sprites** | [kenny.nl](https://www.kenney.nl/assets/tanks) |
-| **Sound Effects** | [Pixabay](https://pixabay.com/sound-effects/) |
+| Asset Type          | Link                                                                |
+|---------------------| ------------------------------------------------------------------ |
+| **Backgrounds**     | [DALL-E 3](https://openai.com/dall-e-3) |
+| **Sprites**         | [kenny.nl](https://www.kenney.nl/assets/tanks) |
+| **Sound Effects**   | [Pixabay](https://pixabay.com/sound-effects/) |
 | **Other UI Assets** | [Brendan Sadlier](https://github.com/brendan-sadlier) |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -78,4 +78,5 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [license-url]: https://csgitlab.ucd.ie/brendan-sadlier/fyp_algopic/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=0A66C2
 [linkedin-url]: https://www.linkedin.com/in/brendan-sadlier-24672823a
-[product-screenshot]: https://placehold.co/1000x600?text=Product+Screenshot+Here
+[product-screenshot]: ./product-screenshot.png
+[Java]: https://img.shields.io/badge/-Java-white.svg?style=for-the-badge&logo=openjdk&colorB=000000

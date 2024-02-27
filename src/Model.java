@@ -327,7 +327,7 @@ public class Model {
 			}
 		}
 
-		if (normalEnemies.size() <= NUMBER_OF_NORMAL_ENEMIES / 2 && NUMBER_OF_HEAVY_ENEMIES > 0) {
+		if (normalEnemies.size() <= NUMBER_OF_HEAVY_ENEMIES / 2 && NUMBER_OF_HEAVY_ENEMIES > 0 && heavyEnemies.size() < 3) {
 			heavyEnemies.add(new HeavyEnemy(new Point3f(((float)Math.random()*1000), 0,0)));
 			NUMBER_OF_HEAVY_ENEMIES--;
 		}
