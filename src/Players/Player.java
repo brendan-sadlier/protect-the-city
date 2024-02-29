@@ -1,4 +1,4 @@
-package Player;
+package Players;
 
 import util.GameObject;
 import util.Point3f;

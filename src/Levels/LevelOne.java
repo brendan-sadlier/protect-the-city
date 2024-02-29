@@ -1,7 +1,8 @@
 package Levels;
 
-import util.Enemy;
-import util.HeavyEnemy;
+import Enemies.Enemy;
+import Enemies.HeavyEnemy;
+import Enemies.NormalEnemy;
 import util.Point3f;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,7 +29,7 @@ public class LevelOne extends Level implements Levels {
         normalEnemies = new CopyOnWriteArrayList<>();
 
         for (int i = 0; i < NUMBER_OF_NORMAL_ENEMIES; i++) {
-            normalEnemies.add(new Enemy(new Point3f(((float)Math.random()*1000), 0,0)));
+            normalEnemies.add(new NormalEnemy(new Point3f(((float)Math.random()*1000), 0,0)));
         }
 
     }

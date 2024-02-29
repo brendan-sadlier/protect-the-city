@@ -1,8 +1,10 @@
 import java.util.Timer;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import Player.PlayerOne;
-import Player.PlayerTwo;
+import Enemies.NormalEnemy;
+import Enemies.HeavyEnemy;
+import Players.PlayerOne;
+import Players.PlayerTwo;
 import util.*;
 
 import Levels.Levels;
@@ -40,7 +42,7 @@ public class Model {
 	private PlayerOne playerOne;
 	private PlayerTwo playerTwo;
 	private final SoundEffect sound = new SoundEffect();
-	private CopyOnWriteArrayList<Enemy> normalEnemies = new CopyOnWriteArrayList<Enemy>();
+	private CopyOnWriteArrayList<NormalEnemy> normalEnemies = new CopyOnWriteArrayList<NormalEnemy>();
 	private CopyOnWriteArrayList<HeavyEnemy> heavyEnemies = new CopyOnWriteArrayList<HeavyEnemy>();
 	private Controller controller = Controller.getInstance();
 	private final CopyOnWriteArrayList<GameObject> BulletList  = new CopyOnWriteArrayList<GameObject>();
@@ -174,7 +176,7 @@ public class Model {
 		// using enhanced for-loop style as it makes it alot easier both code wise and reading wise too
 
 		// Region: Normal Enemies
-		for (Enemy temp : normalEnemies) {
+		for (NormalEnemy temp : normalEnemies) {
 
 			if (!temp.isHit()) {
 
@@ -271,7 +273,7 @@ public class Model {
 	private void enemyLogic() {
 
 		// Normal Enemies
-		for (Enemy temp : normalEnemies) {
+		for (NormalEnemy temp : normalEnemies) {
 		    // Move enemies
 			temp.getCentre().ApplyVector(new Vector3f(0,-0.5f,0));
 			 
@@ -298,7 +300,7 @@ public class Model {
 		}
 
 		if (Math.random() < 0.5 && NUMBER_OF_NORMAL_ENEMIES > 0 && normalEnemies.size() <= 2) {
-			normalEnemies.add(new Enemy(new Point3f(((float)Math.random()*1000), 0,0)));
+			normalEnemies.add(new NormalEnemy(new Point3f(((float)Math.random()*1000), 0,0)));
 			NUMBER_OF_NORMAL_ENEMIES--;
 		}
 
@@ -503,7 +505,7 @@ public class Model {
 		return Level;
 	}
 
-	public CopyOnWriteArrayList<Enemy> getNormalEnemies() {
+	public CopyOnWriteArrayList<NormalEnemy> getNormalEnemies() {
 		return normalEnemies;
 	}
 

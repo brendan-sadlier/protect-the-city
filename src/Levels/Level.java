@@ -1,8 +1,8 @@
 package Levels;
 
-import util.Enemy;
+import Enemies.Enemy;
 import util.GameObject;
-import util.HeavyEnemy;
+import Enemies.HeavyEnemy;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
